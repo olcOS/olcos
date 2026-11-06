@@ -27,15 +27,19 @@
 </p>
 
 > [!IMPORTANT]
-> Install the app and set up your server in advance, while the internet still works normally. Once whitelists are
-> switched on, GitHub and the olcOS website don't open.
+> Download the app in advance: under whitelists GitHub and the olcOS website don't open. Set up your own server over
+> normal internet, for example your home Wi-Fi. During installation the phone connects to the server directly, and
+> under whitelists that connection doesn't get through.
 
 ## What it is
 
 olcOS helps when mobile internet only works through a whitelist and ordinary VPNs no longer connect. The app carries
-your phone's traffic inside an ordinary video call on VK Calls or Yandex Telemost. Carriers let these services
-through, so the connection stays up. On the other side of the call is your own server: it receives the traffic and
-sends it on to the open internet.
+your phone's traffic inside an ordinary video call. The phone and your server join the same room on a call service
+your carrier lets through, and to the carrier it is just a call. The server receives the traffic and sends it on to
+the open internet.
+
+If there are no whitelists and VPNs are simply blocked, olcOS can also connect directly through Xray (VLESS +
+REALITY). That is faster than a call.
 
 There are no shared servers, accounts or subscriptions. The app is free and the code is open under the MIT license.
 
@@ -57,7 +61,7 @@ Why an ordinary VPN doesn't help, and what olcOS does differently:
 | | Where the phone connects | Is it on the whitelist? | Result |
 |---|---|---|---|
 | Ordinary VPN | to the VPN server | no | the connection is cut at once; obfuscation doesn't help |
-| olcOS | to a VK or Telemost call | yes | traffic reaches your server and goes out to the internet |
+| olcOS | to a call service on the whitelist | yes | traffic reaches your server and goes out to the internet |
 
 The one condition: your carrier has to let the chosen call service through. So set up several services on your
 server and check in the app which one answers. If mobile internet is shut down completely and even Gosuslugi doesn't
@@ -67,7 +71,7 @@ open, no app can help.
 
 ### Android
 
-Android 8.0 or later. The file is about 143 MB.
+Android 8.0 or later on a 64-bit phone (almost all of them are). The file is about 150 MB.
 
 1. Download the file:
    [olcOS-3.0.3-beta-android.apk](https://github.com/olcOS/olcos/releases/download/v3.0.3-beta/olcOS-3.0.3-beta-android.apk).
@@ -88,7 +92,7 @@ computer.
 
 1. On the computer, download
    [olcOS-3.0.3-beta-ios.ipa](https://github.com/olcOS/olcos/releases/download/v3.0.3-beta/olcOS-3.0.3-beta-ios.ipa)
-   (about 53 MB) and [Sideloadly](https://sideloadly.io). On Windows you also need iTunes and iCloud from Apple's
+   (about 55 MB) and [Sideloadly](https://sideloadly.io). On Windows you also need iTunes and iCloud from Apple's
    website; the Microsoft Store versions won't work.
 2. Connect the iPhone with the cable. If the phone asks whether to trust this computer, tap "Trust".
 3. Drag the IPA file into the Sideloadly window, enter your Apple ID and click Start. If Apple sends a verification
@@ -104,6 +108,8 @@ What a free Apple ID means:
   apps that let you set a proxy can use it. After you tap Connect, a proxy card appears on the home screen with a
   "Use in Telegram" button and the `127.0.0.1` address and port for other apps. If you use Potatso or Shadowrocket,
   add the olcOS server to their exclusions; the link is on the same card.
+- **Silence plays in the background.** Otherwise iOS unloads the app and the proxy goes away. It doesn't get in the
+  way of music or calls.
 - **The signature lasts 7 days.** After that the app stops opening. Install it again the same way, with Sideloadly and
   the same Apple ID, and your data stays.
 - **Three apps at most.** You can keep no more than three apps installed this way at the same time.
@@ -124,17 +130,23 @@ to it directly, they meet in a call. That is why the server can be anywhere, for
 You don't have to run your own server. If a friend or relative already has one, ask them for an invite (see
 [First connection](#first-connection)).
 
+What the server needs:
+
+- Linux and a root login. Ubuntu or Debian is best; Fedora, CentOS and Arch work too.
+- 1 GB of memory and 10 GB of disk or more. The core is built on the server itself. With less than 2 GB of memory and
+  no swap, the installer adds a 2 GB swap file by itself.
+- The cheapest plan from any host is enough.
+
+Set the server up over normal internet or Wi-Fi: during installation the phone connects to it directly.
+
 ### From the app
 
-1. Rent a VPS from any host: Linux (Ubuntu, Debian, Fedora or CentOS), root access, 1 GB of memory. A cheap plan is
-   enough.
-2. In olcOS tap "+" → "My own server (VPS)". On Android the "+" button is on the Connections tab.
-3. Enter the server address and root password from your host's email.
-4. Pick the call services. For whitelists choose VK Calls and Yandex Telemost, ideally both.
-5. Keep olcOS open while it installs, usually 5–15 minutes. Your phone becomes the server's owner.
-
-Set up the server while the internet still works normally. During installation the phone connects to the server
-directly, and under whitelists that won't work.
+1. In olcOS tap "+" → "My own server (VPS)". On Android the "+" button is on the Connections tab.
+2. Enter the server address and the root password from your host's email. An SSH key works instead of a password.
+3. Pick the call services, preferably several: there is no telling in advance which one your carrier lets through.
+   On Android you pick one during installation and add the rest later on the server's page. For Jitsi the app finds
+   a server that lets your VPS in by itself.
+4. Keep olcOS open while it installs; it takes a few minutes. Your phone becomes the server's owner.
 
 ### With one command
 
@@ -144,9 +156,36 @@ If you prefer a terminal, run this on the server as root:
 curl -fsSL https://raw.githubusercontent.com/olcOS/olcos/main/install.sh | sudo bash
 ```
 
-The script sets up a Jitsi room and the management agent, then shows a QR code. Scan it in olcOS and your phone
-becomes the server's owner. Jitsi usually doesn't get through whitelists, so add VK Calls and Telemost rooms in the
-app afterwards.
+The script finds a Jitsi server that lets your VPS in, creates a room, installs the management agent and shows a QR
+code. Scan it in olcOS and your phone becomes the server's owner. Add other call services later in the app, on the
+server's page. If you run the script again, the server stays as it is and you get a new QR code.
+
+<details>
+<summary>Settings for advanced users</summary>
+
+The installer uses the values that worked best in testing, and you can change them with environment variables:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/olcOS/olcos/main/install.sh | sudo env OLCOS_NAME=home bash
+```
+
+| Variable | What it sets | Default |
+|---|---|---|
+| `OLCOS_CARRIER` | the call service | `jitsi` |
+| `OLCOS_ROOM` | the room (a call link) | made automatically for Jitsi |
+| `OLCOS_JITSI_URL` | the Jitsi server | the first one on the list that lets your VPS in |
+| `OLCOS_TRANSPORT` | how data travels inside the call | `vp8channel`, or `datachannel` where the service doesn't carry it |
+| `OLCOS_VP8_FPS` | frames per second for `vp8channel` | `30` (1–120) |
+| `OLCOS_VP8_BATCH` | packets per frame for `vp8channel` | `64` (1–256) |
+| `OLCOS_NAME` | the server's name in the app | the hostname |
+
+All variables are described at the top of
+[server/install.sh](https://github.com/olcOS/olcos-core/blob/main/server/install.sh). On the phone, frames and packets
+are changed in the app's settings. An Xray server is installed by a separate script,
+[server/xray/install.sh](https://github.com/olcOS/olcos-core/blob/main/server/xray/install.sh): the port, the
+camouflage site and the version are set with `OLCOS_XRAY_*` variables.
+
+</details>
 
 ## First connection
 
@@ -156,23 +195,31 @@ app afterwards.
    work between iPhone and Android.
 
 You can also add a connection another way: "+" → a link, QR code, file or subscription. On iPhone there are
-"Ready-made lists" of free servers, but other people run them and speed isn't guaranteed.
+"Ready-made lists" of free servers, but other people run them: speed isn't guaranteed, and the owners of those
+servers see your traffic.
 
 Connection links and invites contain keys. Don't publish them.
 
 ## Call services
 
-| Service | Under whitelists | What you need |
-|---|---|---|
-| VK Calls | usually gets through | a VK login or a call link |
-| Yandex Telemost | usually gets through | a Yandex login, so the app can renew the room by itself |
-| MTS Link | worth trying | a permanent meeting in your MTS Link account |
-| SaluteJazz | worth trying | nothing |
-| Jitsi | usually doesn't get through | nothing |
-| Direct connection (VLESS + REALITY) | usually doesn't get through | nothing |
+olcOS works through WebRTC video-call services. The list is in the app and grows with updates.
 
-The only way to know which service your carrier lets through is to test it. Passwords stay with VK, Yandex and MTS
-Link: the app keeps only a session to create rooms, and you can sign out of it in settings.
+- The only way to know which service your carrier lets through is to test it: each carrier and region has its own
+  list, and it changes. Keep several services on your server and see in "Connection check" which one answers.
+- Some services need you to sign in, so the app can create and renew rooms by itself. The app doesn't keep your
+  password, only the sign-in session on this phone. You can sign out in settings.
+- The others need no account.
+
+## Plain Xray
+
+If there are no whitelists but VPNs are blocked, connect directly through Xray (VLESS + REALITY). It is faster than a
+call, but doesn't work under whitelists: the phone connects straight to the server.
+
+- You can add your own `vless://` link with REALITY, or a subscription with such links: "+" → a link, QR code or
+  subscription.
+- On iPhone you can install Xray on your server right from the app, together with the calls. Leave the port and the
+  camouflage site as they are or set your own.
+- Android doesn't install Xray on a server yet, but connects with a ready link.
 
 ## Modes
 
@@ -183,11 +230,14 @@ Link: the app keeps only a session to create rooms, and you can sign out of it i
 | iPhone, free Apple ID | no | yes |
 | iPhone, paid developer account | yes | yes |
 
+By default everything goes through the tunnel. In settings you can send Russian websites directly, around the
+tunnel.
+
 ## Troubleshooting
 
 | What happens | What to do |
 |---|---|
-| Nothing opens with olcOS, but Gosuslugi opens without it | Your carrier doesn't let the chosen call service through. Open "Connection check" and connect to the one that answers. Add VK Calls and Telemost rooms to your server. |
+| Nothing opens with olcOS, but Gosuslugi opens without it | Your carrier doesn't let the chosen call service through. Open "Connection check" and connect to the one that answers. Add rooms on other call services to your server. |
 | Nothing opens at all, not even Gosuslugi | Mobile internet has been shut down completely. No app can help here. |
 | It won't connect | "Connection check" shows which protocol answers. For a subscription, tap "Find the fastest and connect". |
 | It's slow | Measure the protocols in "Connection check" and connect to the fastest one, or to "Whole server" if combining rooms adds speed. |
@@ -195,12 +245,12 @@ Link: the app keeps only a session to create rooms, and you can sign out of it i
 | The iPhone says "Untrusted Developer" | Settings → General → VPN & Device Management → your Apple ID → "Trust". |
 | The app on the iPhone stopped opening | Seven days have passed and the signature expired. Install the app again with Sideloadly and the same Apple ID. |
 | Android won't install the file | Allow installs for your browser or Files app: look for "Install unknown apps" in the phone's settings. |
-| You need help | Collect the log: on iPhone Settings → "View all logs" → "Export all logs", on Android Settings → "Diagnostics" → "Copy the log". Remove keys, passwords and full links from it and [open an issue](https://github.com/olcOS/olcos/issues/new/choose). |
+| You need help | Collect the log: on iPhone Settings → "View all logs" → "Export all logs", on Android Settings → "Diagnostics" → "Copy the log". Make sure no keys, passwords, full links or server addresses are left in it and [open an issue](https://github.com/olcOS/olcos/issues/new/choose). |
 
 ## Limitations
 
-- The VPN carries TCP over IPv4. Things that work only over UDP or IPv6 may not work. Websites, messaging, email and
-  most apps work.
+- The VPN carries only TCP over IPv4; DNS goes through the tunnel too. Games and messenger calls that need UDP, and
+  IPv6-only sites, may not work. Websites, messaging, email and most apps work.
 - Speed depends on the call service and your network. A service can close a room or limit guests, so keep several
   services on your server.
 - This is a beta; behaviour and compatibility are still changing.
@@ -233,22 +283,25 @@ Use olcOS within the laws of your country and the terms of the services your tra
 
 ## How it is built
 
-The phone and the server join the same video room as two call participants and exchange data over WebRTC. There can
-be several rooms on different services. olcOS combines them into one channel: the load is split between rooms, and if
-one drops, the connection keeps working through the others.
+The phone and the server join the same video room as two call participants and exchange data over WebRTC: inside
+the video stream (`vp8channel`) or over the call's data channel (`datachannel`), whichever the service carries. There
+can be several rooms on different services. olcOS combines them into one channel: the load is split between rooms,
+and if one drops, the connection keeps working through the others.
 
-Speed depends mostly on the call service. In the olcrtc core's release measurements VK Calls gave 13–19 Mbit/s,
-MTS Link about 15 Mbit/s and SaluteJazz about 3 Mbit/s
-([settings.ru.md](https://github.com/ghostlane-project/olcrtc/blob/0955ba7f2041d1480524292c4af4135a192fe267/docs/settings.ru.md),
-[gate.ru.md](https://github.com/ghostlane-project/olcrtc/blob/0955ba7f2041d1480524292c4af4135a192fe267/docs/gate.ru.md)).
+Speed depends on the call service, the network and the video channel settings. In our test on 6 November 2026 (a
+server in the Netherlands, Jitsi, 30 frames of 64 packets) the tunnel gave about 9 Mbit/s each way. Per-service
+measurements are in the olcrtc core's documentation
+([gate.ru.md](https://github.com/ghostlane-project/olcrtc/blob/0955ba7f2041d1480524292c4af4135a192fe267/docs/gate.ru.md)).
 Your numbers will differ.
 
 ## For developers
 
-- [olcos-ios](https://github.com/olcOS/olcos-ios): the iPhone and iPad app (SwiftUI) and the shared Go core.
+- [olcos-core](https://github.com/olcOS/olcos-core): the shared Go core (olcrtc and Xray), the server scripts and the
+  installer.
+- [olcos-ios](https://github.com/olcOS/olcos-ios): the iPhone and iPad app (SwiftUI).
 - [olcos-android](https://github.com/olcOS/olcos-android): the Android app (Kotlin, Jetpack Compose).
 - [olcos.github.io](https://github.com/olcOS/olcos.github.io): the website.
-- This repository: releases, the server installer and the user guide.
+- This repository: releases, the short server installer and the user guide.
 
 ## Bugs and security
 

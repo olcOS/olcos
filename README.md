@@ -1,36 +1,51 @@
 <div align="center">
-  <img src="assets/icon.png" width="112" height="112" alt="olcOS" />
+  <a href="https://olcos.github.io"><img src="assets/icon.png" width="120" height="120" alt="olcOS" /></a>
   <h1>olcOS</h1>
   <p><b>Ваш телефон. Ваш сервер. Ваше подключение.</b></p>
-  <p><a href="README.en.md">English</a> · Русский</p>
+  <p>VPN и SOCKS5-прокси через собственный сервер, спрятанные внутри обычного видеозвонка.</p>
   <p>
-    <a href="https://github.com/olcOS/olcos-ios/actions/workflows/build.yml"><img src="assets/button-ios.svg" height="48" alt="Скачать для iPhone и iPad" /></a>
-    &nbsp;
-    <a href="https://github.com/olcOS/olcos-android/actions/workflows/build.yml"><img src="assets/button-android.svg" height="48" alt="Скачать для Android" /></a>
+    <img src="https://img.shields.io/badge/iOS-17%2B-1F5FFF?style=flat-square&logo=apple&logoColor=white" alt="iOS 17+" />
+    <img src="https://img.shields.io/badge/Android-8%2B-1F5FFF?style=flat-square&logo=android&logoColor=white" alt="Android 8+" />
+    <a href="https://github.com/olcOS/olcos/releases/latest"><img src="https://img.shields.io/github/v/release/olcOS/olcos?style=flat-square&color=1F5FFF&label=%D1%80%D0%B5%D0%BB%D0%B8%D0%B7" alt="Релиз" /></a>
+    <img src="https://img.shields.io/badge/%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F-MIT-1F5FFF?style=flat-square" alt="MIT" />
   </p>
-  <p><sub>Бета. Сборки делает CI: откройте последний зелёный запуск, раздел «Artifacts».</sub></p>
+  <p>
+    <a href="https://github.com/olcOS/olcos/releases/latest"><img src="assets/button-ios.svg" height="48" alt="Скачать для iPhone и iPad" /></a>
+    &nbsp;
+    <a href="https://github.com/olcOS/olcos/releases/latest"><img src="assets/button-android.svg" height="48" alt="Скачать для Android" /></a>
+  </p>
+  <p><a href="https://olcos.github.io">Сайт</a> · <a href="https://github.com/olcOS/olcos-ios">iOS</a> · <a href="https://github.com/olcOS/olcos-android">Android</a> · <a href="README.en.md">English</a></p>
 </div>
 
 <p align="center">
-  <img src="assets/screen-whole-server.png" width="230" alt="Весь сервер" />
-  <img src="assets/screen-speed.png" width="230" alt="Скорость по протоколам" />
-  <img src="assets/screen-settings.png" width="230" alt="Настройки" />
+  <img src="assets/screen-whole-server.png" width="240" alt="Весь сервер" />
+  &nbsp;
+  <img src="assets/screen-speed.png" width="240" alt="Скорость по протоколам" />
+  &nbsp;
+  <img src="assets/screen-settings.png" width="240" alt="Настройки" />
 </p>
 
-**olcOS** пускает трафик телефона через ваш собственный сервер. Между телефоном и сервером стоит обычная
-видеокомната: Jitsi, SaluteJazz, VK Звонки, МТС Link или Яндекс Телемост. Сервис видит обычный WebRTC-звонок,
-а вы получаете VPN или локальный SOCKS5-прокси. Есть и прямой вариант: VLESS + REALITY.
+## Как это работает
 
-## Что умеет
+```mermaid
+flowchart LR
+    A["📱 Телефон с olcOS"] -->|WebRTC| B["🎥 Видеокомната<br/>Jitsi · VK · SaluteJazz<br/>МТС Link · Телемост"]
+    B -->|WebRTC| C["🖥 Ваш сервер"]
+    C --> D["🌐 Интернет"]
+```
 
-- **Свой сервер без возни.** Одна команда на чистом VPS, и в приложении появляется QR-код подключения.
-- **Все протоколы сразу.** Режим «Весь сервер» склеивает несколько комнат в один канал. Если одна отвалилась,
-  соединение держат остальные.
-- **Не сдаётся.** Обрыв замечается быстро, а переподключение идёт, пока вы его не остановите. Остановка только
-  на ошибках, которые не лечатся повтором: неверный ключ, комната удалена.
-- **Серверы с телефона.** Комнаты, ключи, обновление ядра и приглашения для близких настраиваются из приложения.
-- **VPN или прокси.** VPN на весь телефон либо SOCKS5 для одного приложения.
-- **Свой язык и тема.** Русский, английский, светлая и тёмная.
+Сервис видеозвонков видит обычный звонок, а вы получаете VPN на весь телефон или SOCKS5-прокси для отдельных
+приложений. Если звонок не нужен, есть прямой режим VLESS + REALITY.
+
+## Возможности
+
+| | |
+|---|---|
+| 🔗 **Весь сервер сразу** | Несколько комнат склеиваются в один канал. Большая загрузка идёт по всем, обрыв одной не рвёт соединение. |
+| 🔁 **Не сдаётся** | Обрыв замечается быстро, переподключение идёт, пока вы его не остановите. Стоп только на неустранимых ошибках. |
+| 📲 **Сервер с телефона** | Комнаты, ключи, обновление ядра и приглашения для близких — прямо из приложения. |
+| 🛡 **VPN или прокси** | VPN на весь телефон или SOCKS5 для одного приложения, например Telegram. |
+| 🔒 **Только ваше** | Никаких общих серверов и аккаунтов: трафик идёт через сервер, который принадлежит вам. |
 
 ## Поставить сервер
 
@@ -38,43 +53,44 @@
 curl -fsSL https://raw.githubusercontent.com/olcOS/olcos/main/install.sh | sudo bash
 ```
 
-Подходит Debian, Ubuntu, Fedora и CentOS с root-доступом. В конце скрипт печатает QR-код: отсканируйте его
-приложением, и телефон станет владельцем сервера.
+Debian, Ubuntu, Fedora или CentOS с root-доступом. В конце скрипт покажет QR-код: отсканируйте его в olcOS, и телефон
+станет владельцем сервера.
+
+## Платформы
+
+| | Требования | Исходный код |
+|---|---|---|
+| **iPhone и iPad** | iOS 17+, установка через Sideloadly, AltStore или SideStore | [olcos-ios](https://github.com/olcOS/olcos-ios) |
+| **Android** | Android 8.0+, файл `.apk` | [olcos-android](https://github.com/olcOS/olcos-android) |
+| **Сервер** | Linux с root-доступом, 1 ГБ памяти | [install.sh](install.sh) |
 
 <details>
 <summary><b>Как поставить приложение</b></summary>
 
-**iPhone и iPad (iOS 17+).** Сборка не подписана, ставится через Sideloadly, AltStore или SideStore. С бесплатным
-Apple ID система не даёт приложению делать VPN, поэтому остаётся режим SOCKS5. Полный VPN нужен платный аккаунт
-разработчика.
+**iPhone и iPad.** Скачайте `.ipa` из [последнего релиза](https://github.com/olcOS/olcos/releases/latest) и поставьте через
+Sideloadly, AltStore или SideStore. С бесплатным Apple ID iOS не даёт приложениям делать VPN, поэтому работает режим SOCKS5.
+VPN на весь телефон доступен при подписи платным аккаунтом разработчика.
 
-**Android (8.0+).** Скачайте `.apk`, разрешите установку из этого источника и откройте файл. Для VPN система один раз
-спросит разрешение.
-
-Обе сборки лежат в «Artifacts» последнего зелёного запуска в репозиториях
-[olcos-ios](https://github.com/olcOS/olcos-ios) и [olcos-android](https://github.com/olcOS/olcos-android).
-Скачать артефакт может любой пользователь GitHub после входа в аккаунт.
+**Android.** Скачайте `.apk`, разрешите установку из этого источника и откройте файл. Для VPN система один раз спросит
+разрешение.
 </details>
 
 <details>
 <summary><b>Скорость и честные ограничения</b></summary>
 
-Скорость зависит от видеокомнаты, а не от вашего сервера. По измерениям ядра на тестовом стенде:
-МТС Link около 15 Мбит/с, Jitsi около 5, SaluteJazz 2–3. Для VK Звонков замеров пока нет. У вас цифры будут другими:
-они зависят от сети, времени суток и загрузки сервиса.
+Скорость зависит от видеокомнаты, а не от вашего сервера. По замерам ядра на тестовом стенде: МТС Link около 15 Мбит/с,
+Jitsi около 5, SaluteJazz 2–3. Для VK Звонков замеров пока нет. У вас цифры будут другими.
 
-- Сервис видеозвонков может закрыть комнату, ввести лимит или отказать гостям. Поэтому приложение держит несколько
-  протоколов и умеет менять комнату.
-- Скачивание большим файлом идёт через все комнаты сразу, мелкие запросы идут по одной лучшей.
+- Сервис видеозвонков может закрыть комнату, ввести лимит или отказать гостям. Поэтому olcOS держит несколько протоколов
+  и умеет менять комнату.
+- VPN пропускает TCP поверх IPv4. Приложениям, которым нужен UDP или IPv6, он может не подойти.
 - Это бета: интерфейс и совместимость меняются.
-- Приложение не предназначено для нарушения закона. Используйте его на своих серверах и в рамках правил сервисов,
-  комнаты которых вы занимаете.
+- Используйте olcOS в рамках закона и правил сервисов, через которые идёт трафик.
 </details>
 
 <details>
 <summary><b>Из чего это сделано</b></summary>
 
-Клиенты: SwiftUI (iOS) и Jetpack Compose (Android). Ядро на Go общее: туннель поверх WebRTC и клиент склейки комнат
-в один канал. Исходники, из которых CI собирает приложения, лежат в репозиториях
-[olcos-ios](https://github.com/olcOS/olcos-ios) и [olcos-android](https://github.com/olcOS/olcos-android).
+Клиенты: SwiftUI (iOS) и Kotlin с Jetpack Compose (Android). Общее ядро на Go: туннель поверх WebRTC на основе
+[olcrtc](https://github.com/ghostlane-project/olcrtc) и склейка комнат в один канал. Лицензия MIT.
 </details>

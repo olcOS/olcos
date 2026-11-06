@@ -1,17 +1,20 @@
 #!/bin/bash
-# olcOS server installer. The installer itself lives next to the code it installs, in
-# https://github.com/olcOS/olcos-ios (scripts/install.sh); this stub fetches the current one and runs it,
-# so this repository never holds a second copy that could drift. Settings are the same environment
-# variables (OLCOS_NAME, OLCOS_HOST, OLCOS_CARRIER, OLCOS_TRANSPORT, ...), described in that script.
+# olcOS server installer. The installer lives in olcOS/olcos-core (server/install.sh), next to the
+# server script and the agent it installs. This stub runs the installer of one tested core commit and
+# has it fetch its files from the same commit, so the command below always installs one known version.
+# Settings are environment variables (OLCOS_NAME, OLCOS_CARRIER, OLCOS_TRANSPORT, OLCOS_VP8_FPS,
+# OLCOS_VP8_BATCH, OLCOS_JITSI_URL, ...), described at the top of that script.
 #
 #   curl -fsSL https://raw.githubusercontent.com/olcOS/olcos/main/install.sh | sudo bash
 set -euo pipefail
 
-URL="https://raw.githubusercontent.com/olcOS/olcos-ios/main/scripts/install.sh"
+CORE_COMMIT="fbce2389845f1359ae3814d126ad1cf2486f89ae"
+SOURCE="https://raw.githubusercontent.com/olcOS/olcos-core/$CORE_COMMIT"
+URL="$SOURCE/server/install.sh"
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
 
-curl -fsSL "$URL" -o "$TMP"
+curl -fsSL "$URL" -o "$TMP" || { echo "olcOS: the installer could not be fetched from $URL" >&2; exit 1; }
 # A page that is not a shell script (an error page, a captive portal) must not run as root.
 head -n 1 "$TMP" | grep -q '^#!.*\(ba\)\?sh' || { echo "olcOS: the installer could not be fetched from $URL" >&2; exit 1; }
-exec bash "$TMP" "$@"
+OLCOS_SOURCE="${OLCOS_SOURCE:-$SOURCE}" bash "$TMP" "$@" < /dev/null

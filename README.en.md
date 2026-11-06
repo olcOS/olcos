@@ -208,7 +208,8 @@ Link: the app keeps only a session to create rooms, and you can sign out of it i
 ## Questions
 
 **How can I tell that whitelists are on?**
-Turn off your VPN and open any foreign website. If it doesn't open but Gosuslugi and Yandex do, whitelists are on.
+Turn off your VPN and open a site that normally works without one, such as google.com. If it doesn't open but
+Gosuslugi and Yandex do, whitelists are on.
 
 **How much does it cost?**
 The app is free. You only pay your host for the server, if you run your own.
